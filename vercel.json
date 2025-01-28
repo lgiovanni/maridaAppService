@@ -15,6 +15,7 @@
   "env": {
     "NODE_ENV": "production",
     "NEW_RELIC_APP_NAME": "MaridaApp",
-    "NEW_RELIC_LICENSE_KEY": "eu01xx14ccaa91ffd663fad169fe29d2FFFFNRAL"
+    "NEW_RELIC_LICENSE_KEY": "eu01xx14ccaa91ffd663fad169fe29d2FFFFNRAL",
+    "MONGO_URI": "mongodb+srv://giovalan:WfIdRt0RNNd65aAq@social-app-db.zjvxf.mongodb.net/?retryWrites=true&w=majority&appName=social-app-db"
   }
 }
