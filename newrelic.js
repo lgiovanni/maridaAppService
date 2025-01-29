@@ -7,6 +7,19 @@ exports.config = {
     level: 'info'
   },
   allow_all_headers: true,
+  distributed_tracing: {
+    enabled: true
+  },
+  transaction_tracer: {
+    enabled: true,
+    transaction_threshold: 'apdex_f',
+    record_sql: 'obfuscated',
+    explain_threshold: 500
+  },
+  error_collector: {
+    enabled: true,
+    ignore_status_codes: [404]
+  },
   attributes: {
     exclude: [
       'request.headers.cookie',
