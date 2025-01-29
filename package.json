@@ -12,6 +12,7 @@
         "test:payment": "jest tests/payment/"
     },
     "dependencies": {
+        "newrelic": "^11.10.3",
         "@binance/connector": "^3.0.0",
         "@paypal/payouts-sdk": "^1.1.1",
         "aws-sdk": "^2.1490.0",
