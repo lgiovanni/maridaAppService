@@ -1,6 +1,21 @@
 const mongoose = require('mongoose');
 const config = require('./config');
 
+const connectDB = async () => {
+  const maskedUri = config.mongoUri.replace(/\/\/([^:]+):([^@]+)@/, '//****:****@');
+  console.log('Attempting to connect to MongoDB at:', maskedUri);
+
+  try {
+    await mongoose.connect(config.mongoUri);
+    console.log('MongoDB connected successfully');
+  } catch (error) {
+    console.error('MongoDB connection error:', error.message);
+    process.exit(1);
+  }
+};
+
+module.exports = connectDB;
+
 const MAX_RETRIES = 5;
 const RETRY_INTERVAL = 10000; // 10 seconds
 
