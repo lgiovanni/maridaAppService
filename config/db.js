@@ -35,10 +35,13 @@ const connectWithRetry = async (retryCount = 0) => {
     await mongoose.connect(config.mongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 30000,
-      socketTimeoutMS: 60000,
-      connectTimeoutMS: 30000,
-      heartbeatFrequencyMS: 2000,
+      serverSelectionTimeoutMS: 60000,
+      socketTimeoutMS: 120000,
+      connectTimeoutMS: 60000,
+      heartbeatFrequencyMS: 5000,
+      maxPoolSize: 10,
+      minPoolSize: 2,
+      maxIdleTimeMS: 60000,
       retryWrites: true,
       w: 'majority'
     });
