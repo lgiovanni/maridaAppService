@@ -70,11 +70,22 @@ const authValidationRules = {
       .withMessage('El nombre de usuario debe tener al menos 3 caracteres')
   ],
   login: [
-    body('email')
+    body('identifier')
+      .exists()
+      .withMessage('El identificador es requerido')
+      .bail()
       .trim()
-      .isEmail()
-      .withMessage('Email inválido')
-      .normalizeEmail(),
+      .notEmpty()
+      .withMessage('El identificador es requerido')
+      .custom((value) => {
+        // Check if value is a valid email or phone number
+        const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+        const isPhone = /^\+?[1-9]\d{1,14}$/.test(value);
+        if (!isEmail && !isPhone) {
+          throw new Error('Identificador inválido. Debe ser un email o número de teléfono válido');
+        }
+        return true;
+      }),
     body('password')
       .notEmpty()
       .withMessage('La contraseña es requerida')

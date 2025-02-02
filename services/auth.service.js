@@ -95,6 +95,37 @@ class AuthService {
     return this.generateToken(user._id);
   }
 
+  async login(identifier, password) {
+    try {
+      const user = await User.findOne({
+        $or: [
+          { email: identifier },
+          { phoneNumber: identifier }
+        ]
+      }).select('+password');
+
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+
+      if (!user.verified) {
+        throw new Error('Por favor verifica tu cuenta antes de iniciar sesión');
+      }
+
+      const isValidPassword = await user.comparePassword(password);
+      if (!isValidPassword) {
+        throw new Error('Contraseña incorrecta');
+      }
+
+      user.lastLogin = new Date();
+      await user.save();
+
+      return this.generateToken(user._id);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async loginWithGoogle(token) {
     const ticket = await this.googleClient.verifyIdToken({
       idToken: token,
