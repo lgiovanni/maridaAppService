@@ -9,6 +9,15 @@ const errorMiddleware = require('../middlewares/error.middleware');
 
 const app = express();
 
+// Middlewares
+app.use(cors());
+app.use(helmet());
+app.use(morgan('dev'));
+
+// Configure body parser before routes
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
 // Root route handler
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to MaridaApp API' });
@@ -16,13 +25,6 @@ app.get('/', (req, res) => {
 
 // Conectar a la base de datos
 connectDB();
-
-// Middlewares
-app.use(cors());
-app.use(helmet());
-app.use(morgan('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // Rutas
 app.use('/api/auth', require('../routes/auth.routes'));

@@ -6,13 +6,17 @@ class EmailService {
     this.transporter = nodemailer.createTransport({
       service: config.email.service,
       auth: {
-        user: config.email.user,
-        pass: config.email.pass
+        user: config.email.auth.user,
+        pass: config.email.auth.pass
       }
     });
   }
 
   async sendEmail({ to, subject, text, html }) {
+    if (!config.email.auth.user || !config.email.auth.pass) {
+      throw new Error('Email credentials are not configured');
+    }
+
     return this.transporter.sendMail({
       from: config.email.from,
       to,
@@ -23,4 +27,4 @@ class EmailService {
   }
 }
 
-module.exports = new EmailService();
+module.exports = EmailService;

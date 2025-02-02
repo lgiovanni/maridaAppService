@@ -1,7 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const authService = require('../services/auth.service');
+const AuthService = require('../services/auth.service');
 const { validateRequest, authValidationRules } = require('../middlewares/validator.middleware');
+
+// Apply JSON parsing middleware
+router.use(express.json());
+
+// Initialize AuthService
+const authService = new AuthService();
 
 // Registro por email
 router.post('/register/email',

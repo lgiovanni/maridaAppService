@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
 const config = require('../config/config');
-const { sendEmail } = require('../utils/email.util');
+const EmailService = require('../utils/email.util');
 const { sendSMS } = require('../utils/sms.util');
 const { OAuth2Client } = require('google-auth-library');
 const axios = require('axios');
@@ -9,6 +9,7 @@ const axios = require('axios');
 class AuthService {
   constructor() {
     this.googleClient = new OAuth2Client(config.google.clientId);
+    this.emailService = new EmailService();
   }
 
   generateToken(userId) {
@@ -16,23 +17,41 @@ class AuthService {
   }
 
   async registerWithEmail(userData) {
-    const user = await User.create({
-      ...userData,
-      authType: 'email',
-      verified: false
-    });
+    try {
+      // Check if email already exists
+      const existingUser = await User.findOne({ email: userData.email });
+      if (existingUser) {
+        throw new Error('El correo electrónico ya está registrado');
+      }
 
-    const verificationCode = user.generateVerificationCode();
-    await user.save();
+      // Generate verification code
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      await this.emailService.sendEmail({
+        to: userData.email,
+        subject: 'Verifica tu cuenta',
+        text: `Tu código de verificación es: ${verificationCode}`
+      });
 
-    // Enviar email de verificación
-    await sendEmail({
-      to: user.email,
-      subject: 'Verifica tu cuenta',
-      text: `Tu código de verificación es: ${verificationCode}`
-    });
+      // Only create user if email was sent successfully
+      const user = await User.create({
+        ...userData,
+        name: userData.username,  // Map username to name field
+        authType: 'email',
+        verified: false,
+        verificationCode,
+        verificationCodeExpires: new Date(Date.now() + 30 * 60000) // 30 minutes
+      });
 
-    return user;
+      return user;
+    } catch (error) {
+      // If it's our specific error for existing email, throw it directly
+      if (error.message === 'El correo electrónico ya está registrado') {
+        throw error;
+      }
+      // For any other errors, throw the generic error
+      throw new Error('Lo sentimos, estamos experimentando dificultades técnicas. Por favor, inténtalo de nuevo más tarde.');
+    }
   }
 
   async registerWithPhone(userData) {

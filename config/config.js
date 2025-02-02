@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 module.exports = {
-  port: process.env.PORT || 3000,
+  port: process.env.PORT || 3001,
   mongoUri: process.env.MONGODB_URI,
   jwtSecret: process.env.JWT_SECRET,
   environment: process.env.NODE_ENV || 'development',
@@ -9,8 +9,10 @@ module.exports = {
   // Email configuration
   email: {
     service: process.env.EMAIL_SERVICE || 'gmail',
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
+    },
     from: process.env.EMAIL_FROM || 'no-reply@maridaapp.com'
   },
   
